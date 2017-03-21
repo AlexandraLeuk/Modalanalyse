@@ -3,7 +3,7 @@
 
 # # 1 | Eigenvalue Problem
 
-# In[3]:
+# In[1]:
 
 import numpy as np
 from scipy.io import mminfo,mmread
@@ -21,7 +21,7 @@ from numpy import sqrt, dot, sum, abs, diag, array
 # $$ A = S D S^{-1} $$
 # where $D$ is a diagonal matrix containing the EVs.
 
-# In[4]:
+# In[2]:
 
 np.random.seed(1)
 D = np.array([1, 2, 3 ,4])
@@ -29,11 +29,11 @@ S = (np.random.rand(len(D),len(D)) - 0.5)*2 # compute a random matrix with entri
 A = np.dot(np.dot(S,np.diag(D)),inv(S)) # S*D*S^-1, computes a unitary similar matrix of D having the same EVs
 
 
-# In[5]:
+# In[3]:
 
 #test if correct?
 w,v=np.linalg.eig(A)
-w,v
+w,v,A
 
 
 # ### Vector Interation
@@ -47,7 +47,7 @@ w,v
 # 
 # where $b_k$ converges to the eigenvector and ${\lVert A_k b_k \rVert}$ to the eigenvalue.
 
-# In[6]:
+# In[4]:
 
 x = np.ones(len(D)) # one can start with any vector
 
@@ -64,7 +64,7 @@ for i in range(10) :
     pass
 
 
-# In[7]:
+# In[5]:
 
 print("Largest EWert found:")
 print(den) #largest EW
@@ -92,7 +92,7 @@ v[:,1] #test für EV (for i=20 iterations the EV will be much better!)
 # 
 # 
 
-# In[13]:
+# In[14]:
 
 # choose shift point
 sig = 0
@@ -110,7 +110,7 @@ for i in range(10) :
     pass
 
 
-# In[308]:
+# In[15]:
 
 print("Smallest EWert found:")
 print(lamb) #largest EW
@@ -128,10 +128,10 @@ v[:,0] #test für EV
 # ### Rayleigh Quotient Iteration
 # 
 
-# In[14]:
+# In[24]:
 
 # choose shift point
-sig = 1.5
+sig = 1.6
 B = inv(A-sig*np.diag(np.ones_like(D)))
 
 #y = np.dot(Binv,np.ones_like(D)) # start value
@@ -157,7 +157,7 @@ for i in range(10) :
     pass
 
 
-# In[310]:
+# In[25]:
 
 print("EWert found:")
 print(lamb) # EW
@@ -173,7 +173,7 @@ w,v[:,:] #test für EV
 # It is necessary to enforce the orthogonality during iteration.
 # 
 
-# In[2]:
+# In[46]:
 
 W,V = eig(A)
 Is = np.argsort(W)
@@ -196,7 +196,6 @@ b = b1
 for i in range(10) :
     # re - orthogonalize
     b = b - proj(b,v1) - proj(b,v2)
-    
     # inverse vector iteration
     y=np.dot(B,b)
     y_norm=np.linalg.norm(y)
@@ -208,7 +207,7 @@ for i in range(10) :
     pass
 
 
-# In[313]:
+# In[47]:
 
 print("3rd EWert found:")
 print(lamb) # EW
@@ -218,6 +217,21 @@ print(b) #corresponding EV
 W[Is[2]],V[:,Is[2]] #test für EV
 
 ### IMPORTANT: Test for EV FAILED!?!?!
+b/V[:,Is[2]]
+
+
+# ## QR-Algorithm
+
+# In[56]:
+
+#code here
+
+
+# ## subspace-iteration
+
+# In[55]:
+
+#code here
 
 
 # ## FE-Matrices
@@ -228,7 +242,7 @@ W[Is[2]],V[:,Is[2]] #test für EV
 # The matices are real, square and symmetric with dimension $3N \times 3N$.
 # The DoFs are arranged in the order $x_1, y_1, z_1, x_2, \dots, z_N$ where $x_i$ denotes the x-displacement of node $i$.
 
-# In[314]:
+# In[48]:
 
 M = mmread('Ms.mtx').toarray() # mass matrix
 K = mmread('Ks.mtx').toarray() # stiffness matrix
@@ -240,7 +254,7 @@ N = X.shape[0] # number of nodes
 # The DoFs in the system matrices are arranged according to a regular grid of linear finite elements.
 # In the following we determine the unique x, y, and z coodinates of the grid.
 
-# In[315]:
+# In[49]:
 
 nprec = 6 # precision for finding uniqe values
 # get grid vectors (the unique vectors of the x,y,z coodinate-grid)
@@ -261,7 +275,7 @@ Zg = np.reshape(X[:,2],[len(y),len(x),len(z)])
 # 
 # One can plot the location of the nodes, select subsets of nodes and plot them ...
 
-# In[316]:
+# In[50]:
 
 # plot the geometric points 
 from mpl_toolkits.mplot3d import Axes3D
@@ -295,7 +309,7 @@ ax.legend()
 # for the displacements $u$.
 # The system needs to be constrained, thus, we select nodes which will be removed from the system.
 
-# In[317]:
+# In[51]:
 
 
 # because the dofs are ordered as x_1, y_1, z_1, x_2, ..., z_N in the global system, the x, y, and z dofs for node n are
@@ -329,7 +343,7 @@ uc = np.linalg.solve(Kc,fc)
 u[~Ic] = uc
 
 
-# In[318]:
+# In[52]:
 
 # plot in 3D
 fig,ax = plt.subplots(subplot_kw={'projection':'3d'})
@@ -354,7 +368,7 @@ ax.set_zlabel('z')
 ax.legend()
 
 
-# In[319]:
+# In[53]:
 
 # plot in 2D (z-displacement of the top-nodes)
 
@@ -378,7 +392,7 @@ ax.set_ylabel('y')
 # #### All free
 # Use the unconstrained system
 
-# In[320]:
+# In[54]:
 
 # only compute a subset of modes
 from scipy.linalg import eigh
@@ -388,6 +402,11 @@ W,V = eigh(K,M,eigvals=(0,k))
 
 # #### Clamped edges
 # #### Short side clamped
+
+# In[ ]:
+
+
+
 
 # In[ ]:
 
