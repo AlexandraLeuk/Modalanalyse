@@ -17,26 +17,20 @@ Present is
 
 
 ## Main discussion
-We discussed each eigenvalue solver, which are mentioned in homework and we also decided to share our work by using GitHub.  Michael explained his program for the first 4 eigenvalue solvers (vector iteration,2 inverse vector iteration, Rayleigh quotient iteration and higher eigenvalues using inverse vector iteration in orthogonal direction). Afterwards we tested the eigenvalue solver programs and spoke about the occurring phenomenons.
+We discussed the way we want to use Github. The useage of the program and how to properly commit changes was discussed. After that each member of the team showcased again his or her programcode.
+Finally a short description for each solved exercise was created. Sebastian volunteered to scan the (hand written) notes for the exercises.
 
 ## Distribution of work
 
 | Person | Work package |
 | --- | --- |
-| Michael | done |
+| Michael | Vector Iteration, Inverse Vector Iteration, Rayleigh Quotient Iteration, Higher Eigenvalues |
 | Jan | Subspace-iteration |
 | Sebastian | Eigenvalues and mode shapes |
 | Alexandra | QR-algorithm |
 
 ## Main difficulty 
-We instructed how to use sourcetree. Downloading it and how to use Git-repos
-
-
-Inverse Vector Iteration: When we chose a shift point of 1.2, the program´s result for the eigenvalue was 1.4, even though 1.4 shouldn´t be an eigenvalue.
-Main insight:
-Rayleigh: The inverse matrix becomes singular, if sigma is chosen as an eigenvalue. The program´s eigenvectors 
-Eigenvalues converge faster than their eigenvectors
-If 2 eigenvalues are close to each other (e.g. 3.9 and 4), the Rayleigh quotient iteration converges slower to the bigger value.
+How to use Github and the GUI for it Sourcetree. How to resolve merge conflicts and how to exclude the output in the Jupyter Notebooks.
+After that each member of the team wrote down the most important formulas and an rough overview of the algorithm used for their program. This was done as a preperation for tomorrows presentation.
  
-**Next meeting** 28.3.2017 12:00 BA 1.Stock -  preparing for the workshop
-Sandra war da
+**Next meeting** 29.3.2017 9:30 BA08C -  presenting the results at the workshop
