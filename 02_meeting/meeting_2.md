@@ -39,3 +39,4 @@ Eigenvalues converge faster than their eigenvectors
 If 2 eigenvalues are close to each other (e.g. 3.9 and 4), the Rayleigh quotient iteration converges slower to the bigger value.
  
 **Next meeting** 28.3.2017 12:00 BA 1.Stock -  preparing for the workshop
+Sandra war da
