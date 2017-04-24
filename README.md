@@ -30,3 +30,14 @@ conda install -c conda-forge nbstripout
 nbstripout --install
 nbstripout --status  # Just for checking
 ```
+
+## JSAnimation
+Direct installation with PIP
+
+```bash
+# Anaconda Command Prompt
+pip install git+https://github.com/jakevdp/JSAnimation.git
+```
+
+
+
