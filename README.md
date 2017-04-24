@@ -31,6 +31,9 @@ nbstripout --install
 nbstripout --status  # Just for checking
 ```
 
+`Toggle Comment` (I'm going to give up on this one!): Hold Alt-Key and select multiple lines to edit. 
+
+
 ## JSAnimation
 Direct installation with PIP
 
