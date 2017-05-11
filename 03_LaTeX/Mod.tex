@@ -138,7 +138,7 @@
 	\begin{equation} \label{eq:3system}
 	\bb{M} \ddot{\Bx} + \bb{C} \dot{\Bx} + \bb{K} \Bx = \B{f}.
 	\end{equation}
-	Here we denoted mass, damping and stiffness matrix as $\bb{M}, \bb{C}, \bb{K}$, vector $\B{f}$ represents acting forces and the influence of boundary conditions and finally in the vector $\Bx$ are stored the unknown displacements of this system with $N$ degrees of freedom. The solution of associated quadratic eigenvalue problem reads
+	Here we denoted mass, damping and stiffness matrix as $\bb{M}, \bb{C}, \bb{K}$, vector $\B{f}$ represents acting forces and the influence of Neumann boundary conditions and finally in the vector $\Bx$ are stored the unknown displacements of this system with $N$ degrees of freedom. The solution of associated quadratic eigenvalue problem reads
 	\begin{equation} \label{eq:3eigs}
 	(\bb{K} + \lambda \bb{C} + \lambda^2 \bb{M}) \Bv = \B{0},
 	\end{equation}
@@ -155,7 +155,7 @@
 	\begin{equation} \label{eq:3modalS}
 	\underline{\bb{M}} \ddot{\Bq} + \underline{\bb{C}} \dot{\Bq} + \underline{\bb{K}} \Bq = \underline{\B{f}},
 	\end{equation}
-	where the notation $\underline{\bb{M}} = \bb{V}^T \bb{M} \bb{V}, \underline{\bb{C}} = \bb{V}^T \bb{C} \bb{V}, \underline{\bb{K}} = \bb{V}^T \bb{K} \bb{V}$ and $ \underline{\B{f}} = \bb{V}^T \B{f}$ was used. The new system matrices $\underline{\bb{M}}, \underline{\bb{C}}, \underline{\bb{K}}$ are diagonal. The modal basis provides directly the information, which mode is excited and the relative strength of its excitation. 
+	where the notation $\underline{\bb{M}} = \bb{V}^T \bb{M} \bb{V}, \underline{\bb{C}} = \bb{V}^T \bb{C} \bb{V}, \underline{\bb{K}} = \bb{V}^T \bb{K} \bb{V}$ and $ \underline{\B{f}} = \bb{V}^T \B{f}$ was used. The new system matrices $\underline{\bb{M}}, \underline{\bb{C}}, \underline{\bb{K}}$ are diagonal. The modal excitation vector $ q $ provides direct information, which mode is excited and the relative strength of the excitation. 
 	
 	\subsection{Reduced system}
 	The second key idea is restricting the modal basis to a smaller subspace $\B{V}_m \subset \B{V}$ given by $m$ eigenvectors $\Bv_{j_1}, \ldots, \Bv_{j_m}$,  $m \ll n$. The subspace selection has to be performed carefully to keep the characteristic behaviors of the full unreduced system, e.g. it is needed to include all the participating modes from the frequency range of interest. Usually the modes corresponding to the lowest eigenfrequencies are selected due to them having the biggest impact on the behavior. If the motion of the body is a-priori known to be dominant in one plane/direction/rotation, the modes with a low participation factor of this motion can be skipped during base creation. For example this could be the case when different constraints are applied. The modal-basis model reduction is not recommended for simulation of non-linear phenomenons or when investigating local behaviors like stress concentration around holes.
