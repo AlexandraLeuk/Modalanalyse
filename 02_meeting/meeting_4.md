@@ -18,7 +18,7 @@ Present is
 
 ## Main discussion
 We discussed the distribution of following work. The paper has to be prepared until end of next week.
-%In particular about the implemented Newmark method. We could show how the nyquist frequency is influencing the integration. By gradually decreasing the chosen time step, the higher modes are gradually more accurate calculated. We will not implement the Hilbert-Hughs-Taylor method for the upcoming workshop. When we applied a similiar force on all nodes of the beam, it seems like the first eigenmode is excited. 
+Afterwards each part of team worked out given tasks. We discussed the influence of modal basis size, e.g. how much it improves the results. Then the next topic to consider was the proper choice of a vector representing rigid body rotation. In the end the visualization of eigenmodes and the results of modal contributions for harmonic problem gave us better understanding of solved problems.
 
 ## Distribution of work
 
@@ -33,7 +33,7 @@ We discussed the distribution of following work. The paper has to be prepared un
 
 
 ## Main difficulty 
-%Indexing of nodes when multiple selection filters are applied. A structured solution is necessary and practicable with a class implementation. 
+Some time took the preparation of a vector of rigid body rotation. We enjoyed time finding the best way how to best visualize the modal contributions.
  
 **Fourth workshop** 17.5.2017 9:30 BA08C, draft submitting 21.5.2017
 
