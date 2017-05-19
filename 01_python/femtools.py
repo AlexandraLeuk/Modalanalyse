@@ -69,6 +69,13 @@ class FEMSys(object):
         res.x = xw
         return res
 
+    def sim_static(self, f):
+        u = np.zeros(self.nDof)
+        u[~self.Ic] = sparse.linalg.spsolve(self.Kc,f[~self.Ic])
+        res = FEMRes(self)
+        res.x = u
+        return res
+
     def sim_time(self, t, force=None, gamma=.5, beta=.25):
         # Assume equal spaced time discretization
         dt = t[1] - t[0]
@@ -121,13 +128,75 @@ class FEMSys(object):
 
 class FEMRes(object):
     def __init__(self, fem_sys):
+        self.sys = fem_sys
         self.X = fem_sys.X
+        self.nDof = fem_sys.nDof
+        nprec = 6 # precision for finding uniqe values
+        # get grid vectors (the unique vectors of the x,y,z coodinate-grid)
+        self.xv = np.unique(np.round(self.X[:,0],decimals=nprec))
+        self.yv = np.unique(np.round(self.X[:,1],decimals=nprec))
+        self.zv = np.unique(np.round(self.X[:,2],decimals=nprec))
+
+    def reduce_system(self, f):
+        V = self.x
+        K = self.sys.K.toarray()
+        M = self.sys.M.toarray()
+
+        self.K_red = V.T @ K @ V
+        self.M_red = V.T @ M @ V
+        self.f_red = V.T @ f
+
+        self.u_red = np.linalg.solve(self.K_red,self.f_red) # compute displacement in new basis
+        self.u_proj = V @ self.u_red
+        self.u_proj = np.reshape(self.u_proj, self.nDof)
+
+    def compute_MPF(self, e):
+        V = self.x
+        n_modes = V.shape[1]
+        MPF = np.zeros(n_modes)
+        for i, v in enumerate(V.T): # iterate over eigenvectors
+            MPF[i] = np.abs(np.dot(v, self.sys.M.dot(e)) / np.dot(v, self.sys.M.dot(e)))
+            # MPF[i] = np.abs(v @ self.sys.M.toarray() @ e) / (v @ self.sys.M.toarray() @ e)
+        return MPF, V
+
+    def plot_MPF(self, e, title=''):
+        MPF = self.compute_MPF(e)
+        x = range(len(MPF))
+        width = 0.75
+        fig, ax = plt.subplots()
+        ax.bar(x, MPF, width, color="blue")
+        ax.set_xlabel('Measure of coincidance')
+        ax.set_ylabel('Mode index')
+        # ax.title
+        # plt.title(title)
+        # plt.show()
+        return fig, ax
 
     def plot_dof(self, dof, xlabel='Time in s', ylabel='displacement in m'):
         fig, ax = plt.subplots()
         ax.plot(self.t, self.x[dof, :].T)
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
+        return fig, ax
+
+    def plot_2d(self, id_plane, system='original'):
+        if system == 'original':
+            if len(self.x.shape) == 1:
+                u = np.reshape(self.x, (self.nDof, 1))
+            else:
+                u = self.x
+        elif system == 'reduced':
+            u = np.reshape(self.u_proj, (self.nDof, 1))
+
+        for i, v in enumerate(u.T):
+            c = np.reshape(v[id_plane],[len(self.yv),len(self.xv)])
+            lim = np.max(np.abs(c))
+            fig,ax = plt.subplots(figsize=[3.5,2])
+            ax.contourf(self.xv,self.yv,c,cmap=plt.get_cmap('RdBu'),vmin=-lim,vmax=lim)
+            ax.set_aspect('equal')
+            ax.set_xticks([])
+            ax.set_yticks([])
+            fig.tight_layout()
         return fig, ax
 
     def animate(self, ID, idx=0):
@@ -168,6 +237,23 @@ class FEMRes(object):
 
         # create animation (may take long for many frames)
         return animation.FuncAnimation(fig, animate, frames=np.linspace(0, 2*np.pi, 25, endpoint=False), interval=1000/25)
+
+    # def animate_mode3d(self, mode=0):
+    #     fig, ax = plt.subplots(subplot_kw={'projection':'3d'}) 
+
+    #     # animate function is called for each 'frame' (input is frames[i])
+    #     def animate(t):
+    #         ax.cla()
+    #         lim = .1
+    #         ax.set_zlim([-lim, lim])
+    #         ax.set_xlim([-3, 3])
+    #         ax.set_ylim([-2, 2])
+    #         u = np.real(self.x[:,k] * np.exp(self.w0[k]*2*np.pi*t*1j))
+    #         cf = ax.scatter(self.X[:, 0]+u[B.x],self.X[:, 1]+u[B.y],beam.X[:, 2]+u[B.z],c='g',label='deformed')
+    #         return cf
+
+    #     # create animation (may take long for many frames)
+    #     return animation.FuncAnimation(fig, animate, frames=np.linspace(0, 1/(res_harmonic.w0[k]), 15, endpoint=False), interval=1000/25)
 
 
 class IdxMasks:
