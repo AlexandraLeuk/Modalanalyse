@@ -1,2 +1,5 @@
 01_python/.ipynb_checkpoints
 *.lnk
+*.pyc
+_tmp_*.html
+*.orig
