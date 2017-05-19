@@ -2,7 +2,7 @@
 \pdfminorversion=4
 
 
-\documentclass[conference]{journal}%{IEEEtran}
+\documentclass[conference]{journal}
 
 \usepackage[normalem]{ulem}
 \usepackage{amsmath}
@@ -36,14 +36,14 @@
 	% not capitalized unless they are the first or last word of the title.
 	% Linebreaks \\ can be used within to get better formatting as desired.
 	% Do not put math or special symbols in the title.
-	\title{Various concepts of modal analysis and model reduction methods}
+	\title{Various Concepts of Modal Analysis and Model Reduction Methods}
 	
 	% author names and affiliations
 	% use a multiple column layout for up to three different
 	% affiliations
 	\author{\IEEEauthorblockN{Alexandra Leukauf, Sebastian Thormann, Jan Valasek,  and Michael Zauner
-		}
-		\IEEEauthorblockA{Institute of Mechanics and Mechatronics\\Technical University of Vienna, Austria\\
+	 }
+	\IEEEauthorblockA{Institute of Mechanics and Mechatronics\\Technical University of Vienna, Austria\\
 	}}
 	
 	% make the title area
@@ -52,7 +52,7 @@
 	% As a general rule, do not put math, special symbols or citations
 	% in the abstract
 	\begin{abstract}
-		This Paper is intended to give a short overview of 
+		With modal analysis it is possible to predict the dynamic behavior of a system, which is  important for the system's technical design. Another aspect is to minimize the computational effort of mathematical models in numeric simulations. By a reduction of the model's degrees of freedom an approximation to the original model can be computed. The goal of this paper is to provide an overview of common methods for modal analysis, including the free oscillation eigenvalue problem in time/frequency domain and model order reduction methods. With those the reduced model needs significantly less computation time and still shows accurate results.
 	\end{abstract}
 	
 	% no keywords
@@ -71,64 +71,142 @@
 	\IEEEpeerreviewmaketitle
 	
 	\section{Introduction}
+	Analyzing a system in terms of its eigenvalues and eigenvectors simplifies system analysis, and gives insight into dynamic system behavior.
+	This modal analysis is used for e.g. the design of bridges and machine foundations, together with many other technical or mathematical applications. 
 	
-	This paper deals with ...
-	The first section contains overview of numerical algorithms used for solution eigenvalues problem.
+	The crash of the Tacoma-Narrows bridge is a great example to underline the importance of modal analysis. Due to high wind conditions, which excited the bridge close to its natural frequency, the bridge collapsed only four months after opening. 
 	
-	\section{free oscillation Eigenvalue problem}
-	blub, Convergence criteria
-	\begin{equation}
-	\frac{\lVert \lambda_{\mathrm{k+1}}-\lambda_{\mathrm{k}} \rVert}{\lVert \lambda_{\mathrm{k+1}}\rVert}\geq \epsilon
+	The natural frequencies of a system are the frequencies at which the system naturally tends to oscillate under disturbance. This  eigenfrequency depends primarily on structural properties like the mass and stiffness, but also on the boundary conditions. In case of a damped system the damping has also an influence on the characteristic frequencies. Each eigenfrequency has a corresponding mode shape (eigenvector), which can be seen as the deformed shape of the system at this specific frequency. 
+	
+	In this paper, the eigenfrequencies and eigenvectors of a mechanical multi-degree-of-freedom system are derived by solving the eigenvalue problem. The results are an indication on how the system will respond to dynamic excitations.
+	
+	In the first section the free-oscillation eigenvalue problem is derived and the most common numeric eigenvalue solvers are presented. The main topic of the second section is the solution of the equation of motion, which is investigated in time and frequency domain. Additionally Rayleigh and modal damping are considered. Finally in section three the transformation to modal coordinates is explained, as well as how to use and choose a modal subspace.
+	
+	\section{Free oscillation Eigenvalue problem}
+	A mechanical system with $n$ degrees of freedom can be described by 
+	\begin{equation}\label{motion eq}
+	\textbf{M\"x}+\textbf{D\.{x}}+\textbf{Kx}=\textbf{f},
 	\end{equation}
+	where $\mathrm{\textbf{M}}$ is the mass matrix, $\mathrm{\textbf{D}}$ is the damping matrix and $\mathrm{\textbf{K}}$ is the stiffness matrix. All matrices are of the same dimension $n \times n$, whereas the forcing vector $\textbf{f}$ and the displacement vector $\textbf{x}$ have the size $n \times 1$. When considering the system's undamped free oscillation, damping and external forcing must be set zero, which leads to
+	\begin{equation}
+	\textbf{M\"x}+\textbf{Kx}=\textbf{0}.
+	\end{equation}
+	In order to solve this system of second order linear differential equations, a general solution of the form
+	\begin{equation}
+	\textbf{x}(t)=\Re\{\textbf{\^x}e^{\lambda t}\}
+	\end{equation}
+	is inserted into (\ref{motion eq}). Where $\lambda$ is the root of the characteristic equation, which is explained later. As a consequence, one obtains the free oscillation eigenvalue problem
+	\begin{equation}
+	[\textbf{K}+\lambda^2 \textbf{M}]\textbf{\^x}=0.
+	\end{equation}
+	Besides this quadratic eigenvalue problem, the general eigenvalue problem of the form
+	\begin{equation}
+	\textbf{A\^x}=\lambda\textbf{B\^x}
+	\end{equation}
+	and, of course, the standard eigenvalue problem
+	\begin{equation}\label{standard}
+	\textbf{A\^x}=\lambda\textbf{\^x}
+	\end{equation}
+	should also be mentioned. Sometimes it might be useful to convert the different types of eigenvalue problems to the standard form (\ref{standard}). One possibility to transform the quadratic eigenvalue problem to a generalised one is to introduce a new solution vector $\textbf{\^y}=\lambda\textbf{\^x}$, which leads to
+	\begin{equation}
+	\begin{bmatrix}
+	\textbf{K} & \textbf{0} \\
+	\textbf{0} & \textbf{I}
+	\end{bmatrix}
+	\begin{bmatrix}
+	\textbf{\^x} \\
+	\textbf{\^y}
+	\end{bmatrix}
+	=\lambda
+	\begin{bmatrix}
+	\textbf{-D} & \textbf{-M} \\
+	\textbf{I} & \textbf{0}
+	\end{bmatrix}
+	\begin{bmatrix}
+	\textbf{\^x} \\
+	\textbf{\^y}
+	\end{bmatrix}.
+	\end{equation}
+	This generalised problem again can be transformed further to the standard problem by left-multiplying with $\textbf{B}^{-1}$
+	\begin{equation}
+	\textbf{B}^{-1}\textbf{A\^x}=\lambda\textbf{\^x}.
+	\end{equation}
+	
+	
+	\section{Eigenvalue solvers}
+	The goal of eigenvalue solvers is to find the eigenvalues $\lambda_i$ and their corresponding non-trivial eigenvectors $\textbf{\^x}_i$ of (\ref{standard}). An eigenvalue problem with $n$ degrees of freedom has $n$ non-trivial solutions if the characteristic equation
+	\begin{equation}
+	\det (\textbf{A}-\lambda\textbf{I})=0,
+	\end{equation}
+	is fulfilled. In order to get unique eigenvectors, $(\textbf{A}-\lambda\textbf{I})$ must not be singular, which can be achieved by setting constraints. 
+	
 	\subsection*{Vector Iteration}
+	This algorithm is an appropriate solver for sparse matrices and only produces the biggest eigenvalue by its magnitude.  
 	\begin{equation}
-	\textbf{x}_\mathrm{k+1}=\frac{\textbf{Ax}_\mathrm{k}}{\lVert \textbf{Ax}_\mathrm{k} \rVert}
+	\textbf{\^x}_\mathrm{k+1}=\frac{\textbf{A\^x}_\mathrm{k}}{\lVert \textbf{A\^x}_\mathrm{k} \rVert}
 	\end{equation}
+	Here, $\lVert \textbf{A\^x}_\mathrm{k} \rVert$ converges towards the largest eigenvalue, whereas $\textbf{\^x}_\mathrm{k+1}$ provides the corresponding eigenvector.
+	
 	\subsection*{Inverse Vector Iteration}
+	The inverse vector iteration uses the same principle as vector iteration. However, considering the fact that $\lambda$ is an eigenvalue of $\textbf{A}$, then $\lambda-\sigma$ is an eigenvalue of $\textbf{A}-\sigma\textbf{I}$. Moreover, $\mu=\frac{1}{\lambda - \sigma} $ is an eigenvalue of the inverse $ (\textbf{A}-\sigma \textbf{I})^{-1}= \textbf{B}$. 
+	Applying the vector iteration for $\textbf{B}$ 
 	\begin{equation}
-	\textbf{x}_\mathrm{k+1}=\frac{\textbf{Bx}_\mathrm{k}}{\lVert \textbf{Bx}_\mathrm{k} \rVert}
+	\textbf{\^x}_\mathrm{k+1}=\frac{\textbf{B\^x}_\mathrm{k}}{\lVert \textbf{B\^x}_\mathrm{k} \rVert},
 	\end{equation}
-	with
+	one obtains the highest eigenvalue $\mu$ of $\textbf{B}$. Which corresponds to the eigenvalue of $\textbf{A}$ after the back-transformation
 	\begin{equation}
-	\textbf{B}=(\textbf{A}-\sigma \textbf{I})^{-1}
+	\lambda=\sigma+\frac{1}{\mu}.
 	\end{equation}
-	$\mu$ is the eigenvalue of B.
-	\begin{equation}
-	\lambda=\sigma+\frac{1}{\mu}
-	\end{equation}
+	Setting the shift point $\sigma=0$, the solver computes the largest eigenvalue $\mu$ of $\textbf{B}$, which leads to the smallest eigenvalue $\lambda_1$. If the shift point $\sigma$ is chosen close enough to a desired $\lambda_i$, the solver delivers good results.
+	
 	\subsection*{Rayleigh Quotient Iteration}
+	The Rayleigh quotient iteration is an inverse vector iteration with a prescribed shift point of
 	\begin{equation}
-	\sigma_{\mathrm{k}}=\frac{\textbf{x}_{\mathrm{k}}^\intercal\textbf{Ax}_{\mathrm{k}}}{\textbf{x}_{\mathrm{k}}^\intercal\textbf{x}_{\mathrm{k}}}
+	\sigma_{\mathrm{k}}=\frac{\textbf{\^x}_{\mathrm{k}}^\intercal\textbf{A\^x}_{\mathrm{k}}}{\textbf{\^x}_{\mathrm{k}}^\intercal\textbf{\^x}_{\mathrm{k}}},
 	\end{equation}
-	\begin{equation}
-	\textbf{B}_{\mathrm{k}}=(\textbf{A}-\sigma_{\mathrm{k}} \textbf{I})^{-1}
-	\end{equation}
+	called Rayleigh quotient. This very efficient eigenvalue algorithm has high a rate of convergence.
+	
 	\subsection*{Gram-Schmid Process}
-	\begin{equation}
-	p(\textbf{v},\textbf{u})=\frac{\textbf{v}\textbf{u}}{\textbf{u}\textbf{u}}\textbf{u}
-	\end{equation}
+	With the Gram-Schmid process one can compute any higher eigenvectors $\textbf{\^x}_k,...,\textbf{\^x}_n$ of 
+	$\textbf{A}$, if the lower eigenvectors $\textbf{\^x}_1$ to $\textbf{\^x}_{k-1}$ are known. Given an arbitrary linear independent basis $\textbf{v} _1, \textbf{v}_2, ..., \textbf{v}_n$, the Gram-Schmid algorithm constructs an orthogonal basis $\{\textbf{u}_1, \textbf{u}_2,..., \textbf{u}_n\}$ by computing 
 	\begin{equation}
 	\textbf{u}_{\mathrm{k}} = \textbf{v}_{\mathrm{k}} -\sum_{\mathrm{j=1}}^{\mathrm{k-1}}\mathrm{p}(\textbf{v}_{\mathrm{j}},\textbf{u}_{\mathrm{k}})
 	\end{equation}
+	with the projection of $v$ onto $u$
+	\begin{equation}
+	p(\textbf{v},\textbf{u})=\frac{\textbf{v}\textbf{u}}{\textbf{u}\textbf{u}}\textbf{u}.
+	\end{equation}
+	Now, $\textbf{u}_k$ can be used for the inverse vector iteration to calculate
+	$\textbf{u}_\mathrm{k+1}=\frac{\textbf{Bu}_\mathrm{k}}{\lVert \textbf{Bu}_\mathrm{k} \rVert}$.
+	
 	\subsection*{QR-Algorithm}
+	This algorithm uses the QR-decomposition
 	\begin{equation}
-	\textbf{A}_\mathrm{k}={\textbf{Q}_\mathrm{k}}{\textbf{R}_\mathrm{k}}
+	\textbf{A}_\mathrm{k}={\textbf{Q}_\mathrm{k}}{\textbf{R}_\mathrm{k}},
 	\end{equation}
+	where $\textbf{Q}_\mathrm{k}$ is a unitary matrix and $\textbf{R}_\mathrm{k}$ is an upper triangular matrix.
+	This decomposition can be easily computed by any mathematical program like matlab, as well as by, for instance, the Gram-Schmid process. After iterating
 	\begin{equation}
-	\textbf{A}_\mathrm{k+1}={\textbf{R}_\mathrm{k}}{\textbf{Q}_\mathrm{k}}
+	\textbf{A}_\mathrm{k+1}={\textbf{R}_\mathrm{k}}{\textbf{Q}_\mathrm{k}},
 	\end{equation}
+	the matrix $\textbf{A}$ usually has an upper triangular form and its eigenvalues are located at the diagonal. This algorithm produces all the eigenvalues at once.
+	 
 	\subsection*{Subspace Iteration}
+	The subspace iteration delivers only a subset $p<n$ of eigenvalues of $\textbf{A}$. Starting with an initial vector $\textbf{X}_k$, one computes
 	\begin{equation}
-	1=1
+	\textbf{Z}_{k+1}=\textbf{AX}_k
 	\end{equation}
-	
-	
-	
+	and calculates the QR-decomposition of $\textbf{Z}_k$ by
+	\begin{equation}
+	\textbf{Z}_k=\textbf{X}_k\textbf{R}_k.
+	\end{equation}
+	The largest $p$ eigenvalues are located at the diagonal of $\textbf{R}_k$.
 	
 	
 	
 	\section{Time and frequency domain}
 	blub
+	
 	
 	\section{Model order reduction}
 	The goal of this section is to present methods on how to effectively reduce degrees of freedom of given systems. This leads then to a decrease of computational cost and time.
@@ -210,9 +288,7 @@
 	(\bb{K}_r + \mu \bb{C}_r + \mu^2 \bb{M}_r) \Beta = \B{0}.
 	\end{equation}  
 	The damped natural frequency and damping ratio is then the imaginary and real part of the complex valued eigenvalue, respectively $\mu_i = \zeta_i + j \omega_i$.
-	
 	\section{Conclusion}
-	What has been done.
 	
 	\bibliographystyle{unsrt}
 	\bibliography{references}
