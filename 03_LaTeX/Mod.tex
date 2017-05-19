@@ -1,0 +1,222 @@
+
+\pdfminorversion=4
+
+
+\documentclass[conference]{journal}%{IEEEtran}
+
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage[pdftex]{graphicx}
+\usepackage{cite}
+\usepackage{xspace}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[per-mode=symbol]{siunitx}
+\usepackage{booktabs}
+\usepackage{tikzscale}
+\usepackage{array}
+\usepackage{amsmath,amsfonts,amssymb}
+
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\B}[1]{\mathbf{#1}}
+\newcommand{\Bx}{\B{x}}
+\newcommand{\Bv}{\B{v}}
+\newcommand{\Bq}{\B{q}}
+\newcommand{\BV}{\B{V}}
+\newcommand{\Beta}{\boldsymbol{\eta}}
+\newcommand{\Brho}{\boldsymbol{\rho}}
+
+% correct bad hyphenation here
+%\hyphenation{op-tical net-works semi-conduc-tor}
+\begin{document}
+	
+	% paper title
+	% Titles are generally capitalized except for words such as a, an, and, as,
+	% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+	% not capitalized unless they are the first or last word of the title.
+	% Linebreaks \\ can be used within to get better formatting as desired.
+	% Do not put math or special symbols in the title.
+	\title{Various concepts of modal analysis and model reduction methods}
+	
+	% author names and affiliations
+	% use a multiple column layout for up to three different
+	% affiliations
+	\author{\IEEEauthorblockN{Alexandra Leukauf, Sebastian Thormann, Jan Valasek,  and Michael Zauner
+		}
+		\IEEEauthorblockA{Institute of Mechanics and Mechatronics\\Technical University of Vienna, Austria\\
+	}}
+	
+	% make the title area
+	\maketitle
+	
+	% As a general rule, do not put math, special symbols or citations
+	% in the abstract
+	\begin{abstract}
+		This Paper is intended to give a short overview of 
+	\end{abstract}
+	
+	% no keywords
+	
+	
+	
+	
+	% For peer review papers, you can put extra information on the cover
+	% page as needed:
+	% \ifCLASSOPTIONpeerreview
+	% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+	% \fi
+	%
+	% For peerreview papers, this IEEEtran command inserts a page break and
+	% creates the second title. It will be ignored for other modes.
+	\IEEEpeerreviewmaketitle
+	
+	\section{Introduction}
+	
+	This paper deals with ...
+	The first section contains overview of numerical algorithms used for solution eigenvalues problem.
+	
+	\section{free oscillation Eigenvalue problem}
+	blub, Convergence criteria
+	\begin{equation}
+	\frac{\lVert \lambda_{\mathrm{k+1}}-\lambda_{\mathrm{k}} \rVert}{\lVert \lambda_{\mathrm{k+1}}\rVert}\geq \epsilon
+	\end{equation}
+	\subsection*{Vector Iteration}
+	\begin{equation}
+	\textbf{x}_\mathrm{k+1}=\frac{\textbf{Ax}_\mathrm{k}}{\lVert \textbf{Ax}_\mathrm{k} \rVert}
+	\end{equation}
+	\subsection*{Inverse Vector Iteration}
+	\begin{equation}
+	\textbf{x}_\mathrm{k+1}=\frac{\textbf{Bx}_\mathrm{k}}{\lVert \textbf{Bx}_\mathrm{k} \rVert}
+	\end{equation}
+	with
+	\begin{equation}
+	\textbf{B}=(\textbf{A}-\sigma \textbf{I})^{-1}
+	\end{equation}
+	$\mu$ is the eigenvalue of B.
+	\begin{equation}
+	\lambda=\sigma+\frac{1}{\mu}
+	\end{equation}
+	\subsection*{Rayleigh Quotient Iteration}
+	\begin{equation}
+	\sigma_{\mathrm{k}}=\frac{\textbf{x}_{\mathrm{k}}^\intercal\textbf{Ax}_{\mathrm{k}}}{\textbf{x}_{\mathrm{k}}^\intercal\textbf{x}_{\mathrm{k}}}
+	\end{equation}
+	\begin{equation}
+	\textbf{B}_{\mathrm{k}}=(\textbf{A}-\sigma_{\mathrm{k}} \textbf{I})^{-1}
+	\end{equation}
+	\subsection*{Gram-Schmid Process}
+	\begin{equation}
+	p(\textbf{v},\textbf{u})=\frac{\textbf{v}\textbf{u}}{\textbf{u}\textbf{u}}\textbf{u}
+	\end{equation}
+	\begin{equation}
+	\textbf{u}_{\mathrm{k}} = \textbf{v}_{\mathrm{k}} -\sum_{\mathrm{j=1}}^{\mathrm{k-1}}\mathrm{p}(\textbf{v}_{\mathrm{j}},\textbf{u}_{\mathrm{k}})
+	\end{equation}
+	\subsection*{QR-Algorithm}
+	\begin{equation}
+	\textbf{A}_\mathrm{k}={\textbf{Q}_\mathrm{k}}{\textbf{R}_\mathrm{k}}
+	\end{equation}
+	\begin{equation}
+	\textbf{A}_\mathrm{k+1}={\textbf{R}_\mathrm{k}}{\textbf{Q}_\mathrm{k}}
+	\end{equation}
+	\subsection*{Subspace Iteration}
+	\begin{equation}
+	1=1
+	\end{equation}
+	
+	
+	
+	
+	
+	
+	\section{Time and frequency domain}
+	blub
+	
+	\section{Model order reduction}
+	The goal of this section is to present methods on how to effectively reduce degrees of freedom of given systems. This leads then to a decrease of computational cost and time.
+	
+	\subsection{Modal basis}
+	We consider again the system of differential equations of second order, which describes the motion of an elastic body
+	\begin{equation} \label{eq:3system}
+	\bb{M} \ddot{\Bx} + \bb{C} \dot{\Bx} + \bb{K} \Bx = \B{f}.
+	\end{equation}
+	Here we denoted mass, damping and stiffness matrix as $\bb{M}, \bb{C}, \bb{K}$, vector $\B{f}$ represents acting forces and the influence of Neumann boundary conditions and finally in the vector $\Bx$ are stored the unknown displacements of this system with $N$ degrees of freedom. The solution of associated quadratic eigenvalue problem reads
+	\begin{equation} \label{eq:3eigs}
+	(\bb{K} + \lambda \bb{C} + \lambda^2 \bb{M}) \Bv = \B{0},
+	\end{equation}
+	where $\lambda$ is a eigenvalue and $\B{v}$ is eigenvector corresponding to the eigenvalue $\lambda$. This problem has normally $n$ eigenvalues and eigenvectors. 
+	
+	The first key idea in this section is to change the coordinate system from a physical to a modal one. With a basis $\bb{V}$ given by the eigenvectors $\Bv_1, \ldots, \Bv_n$. The modal coordinates $q_i$ are then given by
+	\begin{equation} \label{eq:3modalB}
+	\Bx = \sum\limits_{i=1}^{n} \Bv_i q_i =
+	\begin{bmatrix} \Bv_1 \ldots \Bv_n \end{bmatrix}
+	\begin{bmatrix} q_1 \\ \vdots \\ q_n \end{bmatrix} 
+	= \bb{V} \Bq.
+	\end{equation}
+	Substituting modal coordinates into Eq. \eqref{eq:3system} and multiplying with $ \bb{V}^T $ leads to
+	\begin{equation} \label{eq:3modalS}
+	\underline{\bb{M}} \ddot{\Bq} + \underline{\bb{C}} \dot{\Bq} + \underline{\bb{K}} \Bq = \underline{\B{f}},
+	\end{equation}
+	where the notation $\underline{\bb{M}} = \bb{V}^T \bb{M} \bb{V}, \underline{\bb{C}} = \bb{V}^T \bb{C} \bb{V}, \underline{\bb{K}} = \bb{V}^T \bb{K} \bb{V}$ and $ \underline{\B{f}} = \bb{V}^T \B{f}$ was used. The new system matrices $\underline{\bb{M}}, \underline{\bb{C}}, \underline{\bb{K}}$ are diagonal. The modal excitation vector $ q $ provides direct information, which mode is excited and the relative strength of the excitation. 
+	
+	\subsection{Reduced system}
+	The second key idea is restricting the modal basis to a smaller subspace $\B{V}_m \subset \B{V}$ given by $m$ eigenvectors $\Bv_{j_1}, \ldots, \Bv_{j_m}$,  $m \ll n$. The subspace selection has to be performed carefully to keep the characteristic behaviors of the full unreduced system, e.g. it is needed to include all the participating modes from the frequency range of interest. Usually the modes corresponding to the lowest eigenfrequencies are selected due to them having the biggest impact on the behavior. If the motion of the body is a-priori known to be dominant in one plane/direction/rotation, the modes with a low participation factor of this motion can be skipped during base creation. For example this could be the case when different constraints are applied. The modal-basis model reduction is not recommended for simulation of non-linear phenomenons or when investigating local behaviors like stress concentration around holes.
+	Let's denote reduced basis coordinates as $\eta_i$
+	\begin{equation} \label{eq:3redBasis}
+	\Bx \approx \sum\limits_{i=1}^{m} \Bv_i \eta_i = \bb{V}_r \Beta.
+	\end{equation}
+	Then the system \eqref{eq:3system} changes to
+	\begin{equation} \label{eq:3redSystem}
+	\bb{M}_r \ddot{\Beta} + \bb{C}_r \dot{\Beta} + \bb{K}_r \Beta = \B{f}_r,
+	\end{equation}
+	where we denoted $\underbrace{{\bb{M}}_r}_{m \times m} = \underbrace{\bb{V}_r^T}_{m \times n} \underbrace{\bb{M}}_{n \times n} \underbrace{\bb{V}_r}_{n \times m}$,\\
+	$\bb{C}_r = \bb{V}^T_r \bb{C} \bb{V}_r, \bb{K}_r = \bb{V}^T_r \bb{K} \bb{V}_r$ and $\B{f}_r = \bb{V}^T \B{f}$. %\underbrace{\underline{\B{f}}_r}_{m \times 1} = \underbrace{\bb{V}^T}_{m \times n} \underbrace{\B{f}}_{n \times 1}
+	\\Similar the reduced system \eqref{eq:3redSystem} can be transformed to frequency domain by
+	\begin{equation} \label{eq:3redHelmhotz}
+	(\bb{K}_r + j \omega \bb{C}_r - \omega^2 \bb{M}_r ) \hat{\Beta} = \hat{\B{f}_r}.
+	\end{equation}
+	After the solution of Eq. \eqref{eq:3redSystem} or \eqref{eq:3redHelmhotz} was found, it is possible to express it again in physical coordinates via the transformation
+	\begin{equation} \label{eq:3transfBack}
+	\Bx_r = \bb{V}_r \Beta.
+	\end{equation}
+	
+	\subsection{Arbitrary basis}
+	To better approximate a known displacement $\B{d}$ and to select most appropriate modes a least-square problem can be formulated. The over-determined system 
+	\begin{equation}
+	\bb{V}_r \Beta = \B{d}
+	\end{equation}
+	can be solved in the least-square sense. E.g. by minimizing of the L2-norm of the residual vector $\B{r} = \bb{V}_r \Beta - \B{d}$. Based on the components of $\eta_i$ one can decide if the given mode $\Bv_i$ is essential to be included into a new basis or not. The value of the residual $\B{r}$ is a indication if the pre-chosen basis $\bb{V}_r$ is able to approximate the displacement $\B{d}$ with enough precision. If not, the subset $\bb{V}_r \subset \bb{V}$ should be increased.
+	
+	\subsection{Modal factors}
+	The Modal contribution factor (MCF) defined by
+	\begin{equation} \label{eq:3MCF}
+	\Brho = \frac{\Beta}{|| \Beta ||}
+	\end{equation}
+	describes the relative contribution of each mode to the total solution. For a meaningful interpretation of the modal contributions the modes must be appropriate normalized, e.g. to unit displacement for interpretation in terms of displacement contribution.	If MCF of certain mode $\Bv_j$ is insignificant, it can be removed from the basis $\bb{V}_r$ without significant change to the solution.
+	
+	The Modal participation factor (MPF) gives us information about the content of rigid body motion in a particular mode. For a mode $\Bv_i$ and a displacement direction (or rotation) for the rigid body $\B{e}_j$ the MPF is defined as
+	\begin{equation} \label{eq:3MPF}
+	\Gamma_{ij} = \frac{\Bv_i^T \bb{M} \B{e}_j}{\Bv_i^T \bb{M} \Bv_i}.
+	\end{equation}
+	The MPF has its origin in the modelling of inertia loads, e.g. for assessing earthquake forcing, which is proportional to $\Gamma_{ij}$.
+	
+	%The Mode scale factor (MSF) and the Modal assurance criterion (MAC) given by
+	%\begin{align} \label{eq:3MAC}
+	%  MSF(\Bv_i, \Bv_j) &= \frac{\Bv_i^* \Bv_j}{\Bv_i^* \Bv_i} \neq MSF(\Bv_j, \Bv_i), \\ 
+	%  MAC(\Bv_i, \Bv_j) &= \frac{|\Bv_i^* \Bv_j|^2}{(\Bv_i^* \Bv_j)(\Bv_j^* \Bv_i)} = MAC(\Bv_j, \Bv_i)
+	%\end{align} 
+	%describe how well two mode shapes $\Bv_i$ and $\Bv_j$ correspond. They are insensitive to constant phase shifts and assume a value of 1 for perfect shape correlation. The MAC is sometimes also called mode shape correlation coefficient (MSCC).
+	
+	\underline{Final remark:}\\ Instead of solving the whole quadratic eigenvalue problem \eqref{eq:3eigs} for damped systems one can compute the eigenvectors of the undamped system first and then approximate the eigenvalues in chosen modal subspace, i.e.
+	\begin{equation}
+	(\bb{K}_r + \mu \bb{C}_r + \mu^2 \bb{M}_r) \Beta = \B{0}.
+	\end{equation}  
+	The damped natural frequency and damping ratio is then the imaginary and real part of the complex valued eigenvalue, respectively $\mu_i = \zeta_i + j \omega_i$.
+	
+	\section{Conclusion}
+	What has been done.
+	
+	\bibliographystyle{unsrt}
+	\bibliography{references}
+	% that's all folks
+\end{document}
+
+
