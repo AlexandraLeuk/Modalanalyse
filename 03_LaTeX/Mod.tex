@@ -107,7 +107,7 @@
 	\begin{equation}\label{standard}
 	\textbf{A\^x}=\lambda\textbf{\^x}
 	\end{equation}
-	should also be mentioned. Sometimes it might be useful to convert the different types of eigenvalue problems to the standard form (\ref{standard}). One possibility to transform the quadratic eigenvalue problem to a generalised one is to introduce a new solution vector $\textbf{\^y}=\lambda\textbf{\^x}$, which leads to
+	should also be mentioned. Sometimes it might be useful to convert the different types of eigenvalue problems to the standard form (\ref{standard}). One possibility to transform the quadratic eigenvalue problem to a generalized one is to introduce a new solution vector $\textbf{\^y}=\lambda\textbf{\^x}$, which leads to
 	\begin{equation}
 	\begin{bmatrix}
 	\textbf{K} & \textbf{0} \\
@@ -274,7 +274,7 @@
 	\begin{equation} \label{eq:3MPF}
 	\Gamma_{ij} = \frac{\Bv_i^T \bb{M} \B{e}_j}{\Bv_i^T \bb{M} \Bv_i}.
 	\end{equation}
-	The MPF has its origin in the modelling of inertia loads, e.g. for assessing earthquake forcing, which is proportional to $\Gamma_{ij}$.
+	The MPF has its origin in the modeling of inertia loads, e.g. for assessing earthquake forcing, which is proportional to $\Gamma_{ij}$.
 	
 	%The Mode scale factor (MSF) and the Modal assurance criterion (MAC) given by
 	%\begin{align} \label{eq:3MAC}
@@ -289,7 +289,7 @@
 	\end{equation}  
 	The damped natural frequency and damping ratio is then the imaginary and real part of the complex valued eigenvalue, respectively $\mu_i = \zeta_i + j \omega_i$.
 	\section{Conclusion}
-	
+	Especially with bigger system matrices like the ones used in FEM simulations computational times can become rather large. This is true for calculating the eigenvalues (and eigenvectors) and for transient/frequency responses. By calculating only the needed eigenvalues and reducing the system to a lower degrees-of-freedom system the computational effort can be minimized. When choosing a new basis for the degrees-of-freedom a modal basis should be considered. When transforming a system to a modal basis one can choose only the significant mode-shapes for the experiment (e.g. removing in-plane modes) with the help of modal factors. 
 	\bibliographystyle{unsrt}
 	\bibliography{references}
 	% that's all folks
