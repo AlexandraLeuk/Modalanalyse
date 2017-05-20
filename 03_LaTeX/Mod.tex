@@ -184,6 +184,13 @@
 	\begin{equation}
 	\sigma_{\mathrm{k}}=\frac{\textbf{\^x}_{\mathrm{k}}^\intercal\textbf{A\^x}_{\mathrm{k}}}{\textbf{\^x}_{\mathrm{k}}^\intercal\textbf{\^x}_{\mathrm{k}}},
 	\end{equation}
+	Setting the shift point $\sigma=0$, the solver computes the largest eigenvalue $\mu$ of $\textbf{B}$, which leads to the smallest eigenvalue $\lambda_1$. If the shift point $\sigma$ is chosen close enough to a desired $\lambda_i$, the solver delivers good results.
+	
+	\subsection*{Rayleigh Quotient Iteration}
+	The Rayleigh quotient iteration is an inverse vector iteration with a prescribed shift point of
+	\begin{equation}
+	\sigma_{\mathrm{k}}=\frac{\textbf{\^x}_{\mathrm{k}}^\intercal\textbf{A\^x}_{\mathrm{k}}}{\textbf{\^x}_{\mathrm{k}}^\intercal\textbf{\^x}_{\mathrm{k}}},
+	\end{equation}
 	called Rayleigh quotient. This very efficient eigenvalue algorithm has high a rate of convergence.
 	
 	\subsection*{Gram-Schmid Process}
