@@ -1,12 +1,12 @@
 
-\pdfminorversion=4
+% \pdfminorversion=4
 
 
 \documentclass[conference]{journal}%{IEEEtran}
 
 \usepackage[normalem]{ulem}
 \usepackage{amsmath}
-\usepackage[pdftex]{graphicx}
+% \usepackage[pdftex]{graphicx}
 \usepackage{cite}
 \usepackage{xspace}
 \usepackage{tikz}
@@ -16,6 +16,13 @@
 \usepackage{tikzscale}
 \usepackage{array}
 \usepackage{amsmath,amsfonts,amssymb}
+\usepackage{xcolor}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+   \node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
 
 \newcommand{\bb}[1]{\mathbb{#1}}
 \newcommand{\B}[1]{\mathbf{#1}}
@@ -25,6 +32,19 @@
 \newcommand{\BV}{\B{V}}
 \newcommand{\Beta}{\boldsymbol{\eta}}
 \newcommand{\Brho}{\boldsymbol{\rho}}
+
+\newcommand{\xt}{{}^{t}\Bx}
+\newcommand{\vt}{{}^{t}\dot{\Bx}}
+\newcommand{\at}{{}^{t}\ddot{\Bx}}
+
+\newcommand{\xtt}{{}^{t+\Delta t}\Bx}
+\newcommand{\vtt}{{}^{t+\Delta t}\dot{\Bx}}
+\newcommand{\att}{{}^{t+\Delta t}\ddot{\Bx}}
+
+\newcommand{\M}{\bb{M}}
+\newcommand{\C}{\bb{C}}
+\newcommand{\K}{\bb{K}}
+
 
 % correct bad hyphenation here
 %\hyphenation{op-tical net-works semi-conduc-tor}
@@ -36,12 +56,12 @@
 	% not capitalized unless they are the first or last word of the title.
 	% Linebreaks \\ can be used within to get better formatting as desired.
 	% Do not put math or special symbols in the title.
-	\title{Various concepts of modal analysis and model reduction methods}
+	\title{Various Concepts of Modal Analysis and Model Reduction Methods}
 	
 	% author names and affiliations
 	% use a multiple column layout for up to three different
 	% affiliations
-	\author{\IEEEauthorblockN{Alexandra Leukauf, Sebastian Thormann, Jan Valasek,  and Michael Zauner
+	\author{\IEEEauthorblockN{Alexandra Leukauf, Sebastian Thormann, Jan Valasek,  and Michael Zauner \textcolor{red}{email missing}
 		}
 		\IEEEauthorblockA{Institute of Mechanics and Mechatronics\\Technical University of Vienna, Austria\\
 	}}
@@ -74,6 +94,8 @@
 	
 	This paper deals with ...
 	The first section contains overview of numerical algorithms used for solution eigenvalues problem.
+
+	The presented methods are used to analyse a simple mechanical system. 
 	
 	\section{free oscillation Eigenvalue problem}
 	blub, Convergence criteria
@@ -128,7 +150,99 @@
 	
 	
 	\section{Time and frequency domain}
-	blub
+	We consider a linear time invariant system of ordinary differential equations (ODE) of the second order
+	\begin{equation} \label{eq:2system}
+	\M \ddot{\Bx} + \C \dot{\Bx} + \K \Bx = \B{f},
+	\end{equation}
+	where the initial conditions $\dot{\Bx}(t_0)=\B{v}_0$, $\Bx(t_0)=\Bx_0$ and the source term $\B{f}=\B{f}(t)$ are known. We focus on a structural dynamics problem where $\Bx=\Bx(t)$ denotes a generalized coordinates field which is deformed over time by a load $\B{f}$ and by the initial conditions. The parameters of this system are constant matrices which are well-known as mass $\M$, damping $\C$ and stiffness matrix $\K$.
+
+	The beam in figure \ref{fig:beam} should serve as an example problem for the system described above. Its surface on the left is clamped and one corner on the right is loaded by a vertical force $\B{P}$. Assuming a small deflection compared to the size of the beam the \textit{Euler-Bernoulli Theory} can be applied and we can derive a system as stated in (\ref{eq:2system}). The parameter matrices can be found by using the finite element, the finite differences method or other methods to discretize homogeneous materials.
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics{./figures/beam.pdf}
+	\caption{Clamped beam loaded by $\B{P}$}
+	\label{fig:beam}
+	\end{figure}
+
+	We are interested in numerical methods which can be used to explain the dynamical phenomena of the deformations. There are direct and indirect time integration methods for calculating the dynamic behavior of a system.
+
+	% The transient behavior can be analyzed by time integration which is expensive in computational resources. Since we consider a linear autonomous term of the differential equation system it depends on the source term, if we can use modal analysis directly to efficiently get answers on the frequency domain. Both methods will be explained and illustrated with the example at hand. In the next section an additional method combining both will be shown to achieve superior efficiency. 
+
+	\subsection{Direct Time Integration}
+	A time integration scheme is called direct when the equations are not transformed prior to the numerical integration. The basic idea is to satisfy (\ref{eq:2system}) only at discrete time intervals $\Delta t$. Explicit methods, such as Forward/Backward Euler or Runge-Kutta evaluate the system equations at the current time step to calculate the solution of $\Bx$ at the next time step. These are not necessarily stable for a given time discretization.
+
+	Implicit methods, such as Newmark or Wilson-$\theta$, are stable and specialized for second order ODEs. These calculate the solution for the same time step as they evaluate the system equations. We focus on the Newmark method which makes the following assumptions
+	% 
+	\begin{equation} \label{eq:2newmark-asump}
+	\begin{aligned}
+	\vtt &= \vt 
+	+ \Delta t \left((1-\delta)\; \at + \delta\;\att \right)\,,
+	\\[.5em]
+	\xtt &= \xt + \vt\;\Delta t
+	+ \Delta t^2\;\left((0.5-\alpha) \; \at + \alpha\;\att \right)\,
+	\end{aligned}
+	\end{equation}
+	% 
+	or rewritten as
+	% 
+	\begin{equation} \label{eq:2newmark-asump-re}
+	\begin{aligned}
+	\att &= \frac{\xtt - \xt}{\alpha \Delta t^2} - \frac{\vt}{\alpha \Delta t} - \frac{2 \alpha \at}{1 - 2\alpha}\,,
+	\\[.5em]
+	\vtt &= \vt + \Delta t (1-\delta) \at + \delta \Delta t \att\,.
+	\end{aligned}
+	\end{equation}
+	%
+	The parameters $\alpha$ and $\delta$ determine how the acceleration is interpolated within one time step. Using $\delta=0.5$ and $\alpha=0.25$ corresponds to the approximation of a constant average acceleration.
+	
+
+	Plugging (\ref{eq:2newmark-asump}) in (\ref{eq:2system}) with the stated Newmark parameters we get
+	% 
+	\begin{equation} \label{eq:2newmark-solve}
+	\widetilde{\K}\;\xtt = {}^{t+\Delta t}\widetilde{\B{f}}
+	\end{equation}
+	% 
+	with the effective stiffness matrix
+	% 
+	\begin{equation} \label{eq:2newmark-K}
+	\widetilde{\K} = \frac{4}{\Delta t^2} \M + \frac{2}{\Delta t} \C + \K
+	\end{equation}
+	% 
+	and the effective load vector
+	% 
+	\begin{equation} \label{eq:2newmark-f}
+	\begin{aligned}
+	\widetilde{\B{f}} = {}^{t+\Delta t}{\B{f}}
+	&+ \M \left( \frac{4}{\Delta t^2} \xt + \frac{4}{\Delta t} \vt + \at \right)
+	\\
+	&+ \C \left( \frac{2}{\Delta t} \xt + \vt \right)\,.
+	\end{aligned}
+	\end{equation}
+
+	By applying the Newmark method to the dynamical problem from (\ref{eq:2system}) we arrived at (\ref{eq:2newmark-solve}) which has the same form as a static problem. Since (\ref{eq:2system}) can be interpreted as
+	% 
+	\begin{equation} \label{eq:2system-forces}
+	\B{f}_\mathrm{M} + \B{f}_\mathrm{C} + \B{f}_\mathrm{K} = \B{f}\,,
+	\end{equation}
+	% 
+	where $\B{f}_\mathrm{M}$ denotes the pseudo inertia, $\B{f}_\mathrm{C}$ the damping and $\B{f}_\mathrm{K}$ the stiffness force, the actual dynamic problem can be reformulated as a series of static problems in each time step. The basic steps are shown in algorithm \ref{newmark}.
+
+	\begin{algorithm}
+	\caption{Newmark time integration}\label{newmark}
+	\begin{algorithmic}[1]
+	\Procedure{Newmark}{$\M,\, \C,\, \K,\, \B{f}(t),\, \Delta t,\, t_\mathrm{end},\, {}^{0}\Bx,\, {}^{0}\dot{\Bx}$}
+	\State ${}^{0}\ddot{\Bx} \gets 0$
+	\State $\widetilde{\K} \gets \mathrm{evaluate} \; \circled{\ref{eq:2newmark-K}}$
+	\ForAll{$t \in \{0,\,\Delta t,\,2\Delta t,\,\mathellipsis,\,t_\mathrm{end}\}$}
+		\State ${}^{t+\Delta t}\widetilde{\B{f}} \gets \mathrm{evaluate} \; \circled{\ref{eq:2newmark-f}}$
+		\State $\xtt \gets \mathrm{solve} \; \circled{\ref{eq:2newmark-solve}}$
+		\State $\left(\att,\vtt\right) \gets \mathrm{evaluate} \; \circled{\ref{eq:2newmark-asump-re}}$
+	\EndFor
+	\EndProcedure
+	\end{algorithmic}
+	\end{algorithm}
+
 	
 	\section{Model order reduction}
 	The goal of this section is to present methods on how to effectively reduce degrees of freedom of given systems. This leads then to a decrease of computational cost and time.
@@ -136,11 +250,11 @@
 	\subsection{Modal basis}
 	We consider again the system of differential equations of second order, which describes the motion of an elastic body
 	\begin{equation} \label{eq:3system}
-	\bb{M} \ddot{\Bx} + \bb{C} \dot{\Bx} + \bb{K} \Bx = \B{f}.
+	\M \ddot{\Bx} + \C \dot{\Bx} + \K \Bx = \B{f}.
 	\end{equation}
-	Here we denoted mass, damping and stiffness matrix as $\bb{M}, \bb{C}, \bb{K}$, vector $\B{f}$ represents acting forces and the influence of Neumann boundary conditions and finally in the vector $\Bx$ are stored the unknown displacements of this system with $N$ degrees of freedom. The solution of associated quadratic eigenvalue problem reads
+	Here we denoted mass, damping and stiffness matrix as $\M, \C, \K$, vector $\B{f}$ represents acting forces and the influence of Neumann boundary conditions and finally in the vector $\Bx$ are stored the unknown displacements of this system with $N$ degrees of freedom. The solution of associated quadratic eigenvalue problem reads
 	\begin{equation} \label{eq:3eigs}
-	(\bb{K} + \lambda \bb{C} + \lambda^2 \bb{M}) \Bv = \B{0},
+	(\K + \lambda \C + \lambda^2 \M) \Bv = \B{0},
 	\end{equation}
 	where $\lambda$ is a eigenvalue and $\B{v}$ is eigenvector corresponding to the eigenvalue $\lambda$. This problem has normally $n$ eigenvalues and eigenvectors. 
 	
@@ -153,9 +267,9 @@
 	\end{equation}
 	Substituting modal coordinates into Eq. \eqref{eq:3system} and multiplying with $ \bb{V}^T $ leads to
 	\begin{equation} \label{eq:3modalS}
-	\underline{\bb{M}} \ddot{\Bq} + \underline{\bb{C}} \dot{\Bq} + \underline{\bb{K}} \Bq = \underline{\B{f}},
+	\underline{\M} \ddot{\Bq} + \underline{\C} \dot{\Bq} + \underline{\K} \Bq = \underline{\B{f}},
 	\end{equation}
-	where the notation $\underline{\bb{M}} = \bb{V}^T \bb{M} \bb{V}, \underline{\bb{C}} = \bb{V}^T \bb{C} \bb{V}, \underline{\bb{K}} = \bb{V}^T \bb{K} \bb{V}$ and $ \underline{\B{f}} = \bb{V}^T \B{f}$ was used. The new system matrices $\underline{\bb{M}}, \underline{\bb{C}}, \underline{\bb{K}}$ are diagonal. The modal excitation vector $ q $ provides direct information, which mode is excited and the relative strength of the excitation. 
+	where the notation $\underline{\M} = \bb{V}^T \M \bb{V}, \underline{\C} = \bb{V}^T \C \bb{V}, \underline{\K} = \bb{V}^T \K \bb{V}$ and $ \underline{\B{f}} = \bb{V}^T \B{f}$ was used. The new system matrices $\underline{\M}, \underline{\C}, \underline{\K}$ are diagonal. The modal excitation vector $ q $ provides direct information, which mode is excited and the relative strength of the excitation. 
 	
 	\subsection{Reduced system}
 	The second key idea is restricting the modal basis to a smaller subspace $\B{V}_m \subset \B{V}$ given by $m$ eigenvectors $\Bv_{j_1}, \ldots, \Bv_{j_m}$,  $m \ll n$. The subspace selection has to be performed carefully to keep the characteristic behaviors of the full unreduced system, e.g. it is needed to include all the participating modes from the frequency range of interest. Usually the modes corresponding to the lowest eigenfrequencies are selected due to them having the biggest impact on the behavior. If the motion of the body is a-priori known to be dominant in one plane/direction/rotation, the modes with a low participation factor of this motion can be skipped during base creation. For example this could be the case when different constraints are applied. The modal-basis model reduction is not recommended for simulation of non-linear phenomenons or when investigating local behaviors like stress concentration around holes.
@@ -165,13 +279,13 @@
 	\end{equation}
 	Then the system \eqref{eq:3system} changes to
 	\begin{equation} \label{eq:3redSystem}
-	\bb{M}_r \ddot{\Beta} + \bb{C}_r \dot{\Beta} + \bb{K}_r \Beta = \B{f}_r,
+	\M_r \ddot{\Beta} + \C_r \dot{\Beta} + \K_r \Beta = \B{f}_r,
 	\end{equation}
-	where we denoted $\underbrace{{\bb{M}}_r}_{m \times m} = \underbrace{\bb{V}_r^T}_{m \times n} \underbrace{\bb{M}}_{n \times n} \underbrace{\bb{V}_r}_{n \times m}$,\\
-	$\bb{C}_r = \bb{V}^T_r \bb{C} \bb{V}_r, \bb{K}_r = \bb{V}^T_r \bb{K} \bb{V}_r$ and $\B{f}_r = \bb{V}^T \B{f}$. %\underbrace{\underline{\B{f}}_r}_{m \times 1} = \underbrace{\bb{V}^T}_{m \times n} \underbrace{\B{f}}_{n \times 1}
+	where we denoted $\underbrace{{\M}_r}_{m \times m} = \underbrace{\bb{V}_r^T}_{m \times n} \underbrace{\M}_{n \times n} \underbrace{\bb{V}_r}_{n \times m}$,\\
+	$\C_r = \bb{V}^T_r \C \bb{V}_r, \K_r = \bb{V}^T_r \K \bb{V}_r$ and $\B{f}_r = \bb{V}^T \B{f}$. %\underbrace{\underline{\B{f}}_r}_{m \times 1} = \underbrace{\bb{V}^T}_{m \times n} \underbrace{\B{f}}_{n \times 1}
 	\\Similar the reduced system \eqref{eq:3redSystem} can be transformed to frequency domain by
 	\begin{equation} \label{eq:3redHelmhotz}
-	(\bb{K}_r + j \omega \bb{C}_r - \omega^2 \bb{M}_r ) \hat{\Beta} = \hat{\B{f}_r}.
+	(\K_r + j \omega \C_r - \omega^2 \M_r ) \hat{\Beta} = \hat{\B{f}_r}.
 	\end{equation}
 	After the solution of Eq. \eqref{eq:3redSystem} or \eqref{eq:3redHelmhotz} was found, it is possible to express it again in physical coordinates via the transformation
 	\begin{equation} \label{eq:3transfBack}
@@ -194,7 +308,7 @@
 	
 	The Modal participation factor (MPF) gives us information about the content of rigid body motion in a particular mode. For a mode $\Bv_i$ and a displacement direction (or rotation) for the rigid body $\B{e}_j$ the MPF is defined as
 	\begin{equation} \label{eq:3MPF}
-	\Gamma_{ij} = \frac{\Bv_i^T \bb{M} \B{e}_j}{\Bv_i^T \bb{M} \Bv_i}.
+	\Gamma_{ij} = \frac{\Bv_i^T \M \B{e}_j}{\Bv_i^T \M \Bv_i}.
 	\end{equation}
 	The MPF has its origin in the modelling of inertia loads, e.g. for assessing earthquake forcing, which is proportional to $\Gamma_{ij}$.
 	
@@ -207,7 +321,7 @@
 	
 	\underline{Final remark:}\\ Instead of solving the whole quadratic eigenvalue problem \eqref{eq:3eigs} for damped systems one can compute the eigenvectors of the undamped system first and then approximate the eigenvalues in chosen modal subspace, i.e.
 	\begin{equation}
-	(\bb{K}_r + \mu \bb{C}_r + \mu^2 \bb{M}_r) \Beta = \B{0}.
+	(\K_r + \mu \C_r + \mu^2 \M_r) \Beta = \B{0}.
 	\end{equation}  
 	The damped natural frequency and damping ratio is then the imaginary and real part of the complex valued eigenvalue, respectively $\mu_i = \zeta_i + j \omega_i$.
 	
