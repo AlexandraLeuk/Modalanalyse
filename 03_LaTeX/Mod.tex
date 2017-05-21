@@ -101,13 +101,31 @@
 	In this paper, the eigenfrequencies and eigenvectors of a mechanical multi-degree-of-freedom system are derived by solving the eigenvalue problem. The results are an indication on how the system will respond to dynamic excitations.
 	
 	In the first section the free-oscillation eigenvalue problem is derived and the most common numeric eigenvalue solvers are presented. The main topic of the second section is the solution of the equation of motion, which is investigated in time and frequency domain. Additionally Rayleigh and modal damping are considered. Finally in section three the transformation to modal coordinates is explained, as well as how to use and choose a modal subspace.
+
+	We consider a linear time invariant system of ordinary differential equations (ODE) of the second order
+	\begin{equation} \label{eq:2system}
+	\M \ddot{\Bx} + \C \dot{\Bx} + \K \Bx = \B{f},
+	\end{equation}
+	where the initial conditions $\dot{\Bx}(t_0)=\B{v}_0$, $\Bx(t_0)=\Bx_0$ and the source term $\B{f}=\B{f}(t)$ are known. We focus on a structural dynamics problem where $\Bx=\Bx(t)$ denotes a generalized coordinates field which is deformed over time by a load $\B{f}$ and by the initial conditions. The parameters of this system are constant matrices which are well-known as mass $\M$, damping $\C$ and stiffness matrix $\K$.
+
+	The beam in figure \ref{fig:beam} should serve as an example problem for the system described above. Its surface on the left is clamped and one corner on the right is loaded by a vertical force $\B{P}$. Assuming a small deflection compared to the size of the beam and elastic material behavior the \textit{Euler-Bernoulli Theory} can be applied. We can derive a system as stated in (\ref{eq:2system}) when assuming a viscous damping model. The parameter matrices can be build by using the finite element, the finite differences method or other methods to discretize homogeneous materials.
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics{./figures/beam.pdf}
+	\caption{Clamped beam loaded by $\B{P}$}
+	\label{fig:beam}
+	\end{figure}
 	
 	\section{Free oscillation Eigenvalue problem}
-	A mechanical system with $n$ degrees of freedom can be described by 
-	\begin{equation}\label{motion eq}
-	\textbf{M\"x}+\textbf{D\.{x}}+\textbf{Kx}=\textbf{f},
-	\end{equation}
-	where $\mathrm{\textbf{M}}$ is the mass matrix, $\mathrm{\textbf{D}}$ is the damping matrix and $\mathrm{\textbf{K}}$ is the stiffness matrix. All matrices are of the same dimension $n \times n$, whereas the forcing vector $\textbf{f}$ and the displacement vector $\textbf{x}$ have the size $n \times 1$. When considering the system's undamped free oscillation, damping and external forcing must be set zero, which leads to
+
+	% A mechanical system with $n$ degrees of freedom can be described by 
+	% \begin{equation}\label{motion eq}
+	% \textbf{M\"x}+\textbf{D\.{x}}+\textbf{Kx}=\textbf{f},
+	% \end{equation}
+	% where $\mathrm{\textbf{M}}$ is the mass matrix, $\mathrm{\textbf{D}}$ is the damping matrix and $\mathrm{\textbf{K}}$ is the stiffness matrix. All matrices are of the same dimension $n \times n$, whereas the forcing vector $\textbf{f}$ and the displacement vector $\textbf{x}$ have the size $n \times 1$.
+
+	When considering the system's undamped free oscillation, damping and external forcing must be set zero, which leads to
 	\begin{equation}
 	\textbf{M\"x}+\textbf{Kx}=\textbf{0}.
 	\end{equation}
@@ -232,27 +250,75 @@
 	
 	
 	\section{Time and frequency domain}
-	We consider a linear time invariant system of ordinary differential equations (ODE) of the second order
-	\begin{equation} \label{eq:2system}
-	\M \ddot{\Bx} + \C \dot{\Bx} + \K \Bx = \B{f},
+	% We consider a linear time invariant system of ordinary differential equations (ODE) of the second order
+	% \begin{equation} \label{eq:2system}
+	% \M \ddot{\Bx} + \C \dot{\Bx} + \K \Bx = \B{f},
+	% \end{equation}
+	% where the initial conditions $\dot{\Bx}(t_0)=\B{v}_0$, $\Bx(t_0)=\Bx_0$ and the source term $\B{f}=\B{f}(t)$ are known. We focus on a structural dynamics problem where $\Bx=\Bx(t)$ denotes a generalized coordinates field which is deformed over time by a load $\B{f}$ and by the initial conditions. The parameters of this system are constant matrices which are well-known as mass $\M$, damping $\C$ and stiffness matrix $\K$.
+
+	% The beam in figure \ref{fig:beam} should serve as an example problem for the system described above. Its surface on the left is clamped and one corner on the right is loaded by a vertical force $\B{P}$. Assuming a small deflection compared to the size of the beam and elastic material behavior the \textit{Euler-Bernoulli Theory} can be applied. We can derive a system as stated in (\ref{eq:2system}) when assuming a viscous damping model. The parameter matrices can be build by using the finite element, the finite differences method or other methods to discretize homogeneous materials.
+
+	% \begin{figure}[h]
+	% \centering
+	% \includegraphics{./figures/beam.pdf}
+	% \caption{Clamped beam loaded by $\B{P}$}
+	% \label{fig:beam}
+	% \end{figure}
+
+	We are interested in numerical methods which can be used to explain the dynamical phenomena of the deformations. 
+
+	\subsection{Dynamic Properties}
+	Transfer functions are a well-known concept in system theory. They are in general defined as the ratio of system output and input. In the case of a multi DOF mechanical system the receptance matrix $\bb{H}$ consisting of $n \times n$ transfer functions is defined by
+	% 
+	\begin{equation}
+	H_{ij}(\omega) = \frac{u_i(\omega)}{f_j(\omega)}\,.
 	\end{equation}
-	where the initial conditions $\dot{\Bx}(t_0)=\B{v}_0$, $\Bx(t_0)=\Bx_0$ and the source term $\B{f}=\B{f}(t)$ are known. We focus on a structural dynamics problem where $\Bx=\Bx(t)$ denotes a generalized coordinates field which is deformed over time by a load $\B{f}$ and by the initial conditions. The parameters of this system are constant matrices which are well-known as mass $\M$, damping $\C$ and stiffness matrix $\K$.
+	% 
+	The receptance matrix describes the connection between each two DOF. When the DOF $x_j$ is excited by a load $f_j$, the component $H_{ij}$ means the proportion of the reaction in DOF $x_i$. Thus an experimental identification of $\bb{H}$ is straightforward when a harmonic load is used. This is practicable if the system is reduced as explained later.
 
-	The beam in figure \ref{fig:beam} should serve as an example problem for the system described above. Its surface on the left is clamped and one corner on the right is loaded by a vertical force $\B{P}$. Assuming a small deflection compared to the size of the beam the \textit{Euler-Bernoulli Theory} can be applied and we can derive a system as stated in (\ref{eq:2system}). The parameter matrices can be found by using the finite element, the finite differences method or other methods to discretize homogeneous materials.
+	The point is that the dynamic stiffness and the receptance are an inverse pair
+	% 
+	\begin{equation}
+	\bb{Z}^{-1} = \bb{H}\,,
+	\end{equation}
+	%
+	whereby the system can be experimentally identified.
 
-	\begin{figure}[h]
-	\centering
-	\includegraphics{./figures/beam.pdf}
-	\caption{Clamped beam loaded by $\B{P}$}
-	\label{fig:beam}
-	\end{figure}
+	\subsection{Analysis in the Frequency Domain}
+	The oscillation modes of the undamped system can be found by solving the generalised eigenvalue problem
+	% 
+	\begin{equation}
+	\left( \K - \omega^2\M \right)\,\B{v} = \B{0}\,,
+	\end{equation}
+	%
+	where $\omega_i$ are the natural frequencies and $\B{v}_i$ the corresponding mode shapes.
 
-	We are interested in numerical methods which can be used to explain the dynamical phenomena of the deformations. There are direct and indirect time integration methods for calculating the dynamic behavior of a system.
+	When we assume a harmonic load
+	% 
+	\begin{equation}
+	\B{f} = \Re\{ \hat{\B{f}} e^{j \omega t} \}
+	\end{equation}
+	%
+	the steady state solution of the damped system can be found by solving
+	% 
+	\begin{equation}
+	\bb{Z}(\omega) \hat{\B{u}} = \hat{\B{f}}\,,
+	\end{equation}
+	%
+	where $\bb{Z}$ denotes the dynamic stiffness matrix
+	% 
+	\begin{equation}
+	\bb{Z}(\omega) = \K + j\omega\C -\omega^2\M\,.
+	\end{equation}
+	%
+
+	
+
 
 	% The transient behavior can be analyzed by time integration which is expensive in computational resources. Since we consider a linear autonomous term of the differential equation system it depends on the source term, if we can use modal analysis directly to efficiently get answers on the frequency domain. Both methods will be explained and illustrated with the example at hand. In the next section an additional method combining both will be shown to achieve superior efficiency. 
 
-	\subsection{Direct Time Integration}
-	A time integration scheme is called direct when the equations are not transformed prior to the numerical integration. The basic idea is to satisfy (\ref{eq:2system}) only at discrete time intervals $\Delta t$. Explicit methods, such as Forward/Backward Euler or Runge-Kutta evaluate the system equations at the current time step to calculate the solution of $\Bx$ at the next time step. These are not necessarily stable for a given time discretization.
+	\subsection{Analysis in the Time Domain}
+	There are direct and indirect time integration methods for calculating the dynamic behavior of a system. A time integration scheme is called direct when the equations are not transformed prior to the numerical integration. The basic idea is to satisfy (\ref{eq:2system}) only at discrete time intervals $\Delta t$. Explicit methods, such as Forward/Backward Euler or Runge-Kutta evaluate the system equations at the current time step to calculate the solution of $\Bx$ at the next time step. These are not necessarily stable for a given time discretization.
 
 	Implicit methods, such as Newmark or Wilson-$\theta$, are stable and specialized for second order ODEs. These calculate the solution for the same time step as they evaluate the system equations. We focus on the Newmark method which makes the following assumptions
 	% 
@@ -325,6 +391,50 @@
 	\end{algorithmic}
 	\end{algorithm}
 
+	\subsection{Damping Models}
+	From the beginning we assumed a viscous damping model in the form of (\ref{motion eq}). Damping is a complicated process which is hard to model and measure if its specific effects matter. In fact viscous damping is often postulated. The damping matrix $\C$ could then be interpreted as a residual factor (matrix). Many technical problems can be solved this way since often the decay rate of a process is the most important aspect of damping.
+
+	As a consequence of this consideration we are interested in a damping matrix $\C$ which can be treated easily. \textit{Rayleigh Damping} (proportional damping) in the form of
+	% 
+	\begin{equation} \label{rayleigh}
+	\C = \alpha \M + \beta \K
+	\end{equation}
+	% 
+	leads to a decoupled system
+	% 
+	\begin{equation} \label{rayleigh-decoupled-system}
+	\bb{I}\,\ddot{\Bx} + \mathrm{diag}\,\{ \alpha + \beta \omega_i^2 \}\,\dot{\Bx} + \mathrm{diag}\,\{ \omega_i^2 \}\,\Bx = \B{f}
+	\,.
+	\end{equation}
+	%
+	Thus the natural frequencies $\omega_i$ are determined by solving a series of $n$ single degree of freedom oscillators. The damping ratio for each mode is given by
+	% 
+	\begin{equation} \label{damping-ratio}
+	\zeta_i = \frac{\alpha}{2 \omega_i} + \frac{\beta \omega_i}{2}
+	\,.
+	\end{equation}
+	%
+	Ultra-low frequencies are strongly damped which is controlled by $\alpha$. Throughout the rest of the spectrum a linear slope in terms of the damping ratio towards high frequencies is achieved which is controlled by $\beta$. These frequency characteristics are visualized in figure \ref{fig:rayleigh}.
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[width=.8\columnwidth]{./figures/rayleigh.pdf}
+	\caption{Characteristics of Rayleigh Damping}
+	\label{fig:rayleigh}
+	\end{figure}
+
+	In contrast \textit{non-proportional viscous damping} where $\C$ could be arbitrary chosen leads to the quadratic eigenvalue problem
+	% 
+	\begin{equation} \label{quadratic-eigenvalue-problem}
+	\left(  \K + \lambda \C + \lambda^2 \M \right) \Bx = \B{0}
+	\end{equation}
+	%
+	and \textit{non-proportional structural damping} where instead of an additional damping term in (\ref{eq:2system}) a complex valued stiffness matrix $\hat{\K}$ is chosen. The structural damped system leads to a complex valued, generalized eigenvalue problem
+	% 
+	\begin{equation} \label{structural-damped}
+	\left(  \hat{\K} + \lambda^2 \M \right) \Bx = \B{0}\,.
+	\end{equation}
+	%
 	
 	
 	\section{Model order reduction}
